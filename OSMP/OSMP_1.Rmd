@@ -1,0 +1,402 @@
+---
+title: "Boulder Open Space and Mountain Parks"
+author: "Hannah Miller"
+output:
+  html_document:
+    toc: yes
+    toc_depth: '2'
+  html_document:
+    code_folding: show
+    df_print: paged
+    toc: yes
+    toc_depth: 2
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+source: source.dropbox(https://www.dropbox.com/s/1e5t6l7xt4emgwp/N_cycling.csv?dl=0))
+subtitle: Figures and statistics
+editor_options:
+  chunk_output_type: console
+---
+```{r, include=FALSE}
+#load necessary packages
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(nortest)
+library(Rmisc)
+library(gt)
+library(plotly)
+library(gridExtra)
+library(FSA)
+library(ggpubr)
+```
+# Nitrogen cycling figures 
+```{r plotting graphs, echo=FALSE, warning = FALSE}
+#Load N_cycling excel file
+N_cycling <- read.csv("~/Dropbox/Boulder_OSMP_TOG/Data/N_cycling.csv")
+
+#plot net mineralization per site for all data
+min_site_all_data <- ggplot(data = N_cycling, mapping = aes(x = Site, y = Net_Mineralization, fill = Invasion, label=Field_ID)) + 
+   geom_boxplot() + 
+   ggtitle("All data") + 
+   theme(plot.title = element_text(hjust = 0.5)) + 
+   ylab("Net Mineralization (ug/g/day)") + 
+   scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net nitrification per site for all data
+nit_site_all_data <- ggplot(data = N_cycling, mapping = aes(x = Site, y = Net_Nitrification, fill = Invasion, label = Field_ID)) + 
+   geom_boxplot() + 
+   ggtitle("All data") + 
+   theme(plot.title = element_text(hjust = 0.5)) + 
+   ylab("Net Nitrification (ug/g/day)") + 
+   scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net mineralization per site invaded versus uninvaded for Spring 2020
+min_site_spring20 <- ggplot(data = N_cycling, mapping = aes(x = Site, y = Net_Mineralization, fill = Invasion,label=Field_ID)) + 
+   geom_boxplot(data=subset(N_cycling, Season=="Spring20", position = "dodge")) + 
+   ggtitle("Spring 2020") + 
+   theme(plot.title = element_text(hjust = 0.5)) + 
+   ylab("Net Mineralization (ug/g/day)") + 
+   scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net mineralization per site invaded versus uninvaded for Summer 2020
+min_site_summ20 <- ggplot(data = N_cycling, mapping = aes(x = Site, y = Net_Mineralization, fill = Invasion, label=Field_ID)) + 
+   geom_boxplot(data=subset(N_cycling, Season=="Summer20")) + 
+   ggtitle("Summer 2020") + 
+   theme(plot.title = element_text(hjust = 0.5)) + 
+   ylab("Net Mineralization (ug/g/day)") + 
+   scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net mineralization per site invaded versus uninvaded for Fall 2020
+# min_site_fall20 <- ggplot(data = N_cycling, mapping = aes(x = Site, y = Net_Mineralization, fill = Invasion, label=Field_ID)) + 
+#    geom_boxplot(data=subset(N_cycling, Season=="Fall20")) + 
+#    ggtitle("Fall 2020") + 
+#    theme(plot.title = element_text(hjust = 0.5)) + 
+#    ylab("Net Mineralization (ug/g/day)") + 
+#    scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net nitrification per site invaded versus uninvaded for spring 2020
+nit_site_spring20 <- ggplot(data = N_cycling, mapping = aes(x = Site, y = Net_Nitrification, fill = Invasion, label=Field_ID)) + 
+   geom_boxplot(data=subset(N_cycling, Season=="Spring20")) + 
+   ggtitle("Spring 2020") + 
+   theme(plot.title = element_text(hjust = 0.5)) + 
+   ylab("Net Nitrification (ug/g/day)") + 
+   scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net nitrification per site invaded versus uninvaded for summer 2020
+nit_site_summ20 <- ggplot(data = N_cycling, mapping = aes(x = Site, y = Net_Nitrification, fill = Invasion, label=Field_ID)) + 
+   geom_boxplot(data=subset(N_cycling, Season=="Summer20")) + 
+   ggtitle("Summer 2020") + 
+   theme(plot.title = element_text(hjust = 0.5)) + 
+   ylab("Net Nitrification (ug/g/day)") + 
+   scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net nitrification per site invaded versus uninvaded for Fall 2020
+# nit_site_fall20 <- ggplot(data = N_cycling, mapping = aes(x = Site, y = Net_Nitrification, fill = Invasion, label=Field_ID)) + 
+#    geom_boxplot(data=subset(N_cycling, Season=="Fall20")) + 
+#    ggtitle("Fall 2020") + 
+#    theme(plot.title = element_text(hjust = 0.5)) + 
+#    ylab("Net Nitrification (ug/g/day)") + 
+#    scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net mineralization versus invasion for all sites combined
+ min_all_data <- ggplot(data = N_cycling, mapping = aes(x = Invasion, y = Net_Mineralization)) + 
+   geom_boxplot() + ggtitle("All data") + 
+   theme(plot.title = element_text(hjust = 0.5)) + 
+   ylab("Net Mineralization (ug/g/day)") + 
+   scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net nitrification versus invasion for all sites combined
+nit_all_data <- ggplot(data = N_cycling, mapping = aes(x = Invasion, y = Net_Nitrification)) + 
+   geom_boxplot() + ggtitle("All data") + 
+   theme(plot.title = element_text(hjust = 0.5)) + 
+   ylab("Net Nitrification (ug/g/day)") + 
+   scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net mineralization versus invasion for all sites combined Spring 2020
+min_all_data_spring20 <- ggplot(data = N_cycling, mapping = aes(x = Invasion, y = Net_Mineralization)) + 
+   geom_boxplot(data=subset(N_cycling, Season=="Spring20")) + 
+   ggtitle("Spring 2020") + 
+   theme(plot.title = element_text(hjust = 0.5)) + 
+   ylab("Net Mineralization (ug/g/day)") + 
+   scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net mineralization versus invasion for all sites combined Summer 2020
+min_all_data_summ20 <- ggplot(data = N_cycling, mapping = aes(x = Invasion, y = Net_Mineralization)) + 
+   geom_boxplot(data=subset(N_cycling, Season=="Summer20")) + 
+   ggtitle("Summer 2020") + 
+   theme(plot.title = element_text(hjust = 0.5)) + 
+   ylab("Net Mineralization (ug/g/day)") + 
+   scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net mineralization versus invasion for all sites combined Fall 2020
+# min_all_data_fall20 <- ggplot(data = N_cycling, mapping = aes(x = Invasion, y = Net_Mineralization)) + 
+#    geom_boxplot(data=subset(N_cycling, Season=="Fall20")) + 
+#    ggtitle("Fall 2020") + 
+#    theme(plot.title = element_text(hjust = 0.5)) + 
+#    ylab("Net Mineralization (ug/g/day)") + 
+#    scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net nitrification versus invasion for all sites combined Spring 2020
+nit_all_data_spring20 <- ggplot(data = N_cycling, mapping = aes(x = Invasion, y = Net_Nitrification)) + 
+   geom_boxplot(data=subset(N_cycling, Season=="Spring20")) + 
+   ggtitle("Spring 2020") + theme(plot.title = element_text(hjust = 0.5)) + 
+   ylab("Net Nitrification (ug/g/day)") + 
+   scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net nitrification versus invasion for all sites combined Summer 2020
+nit_all_data_summ20 <- ggplot(data = N_cycling, mapping = aes(x = Invasion, y = Net_Nitrification)) + 
+   geom_boxplot(data=subset(N_cycling, Season=="Summer20")) + 
+   ggtitle("Summer 2020") + 
+   theme(plot.title = element_text(hjust = 0.5)) + 
+   ylab("Net Nitrification (ug/g/day)") + 
+   scale_y_continuous(limits = c(-0.5, 1))
+
+#plot net nitrification versus invasion for all sites combined Fall 2020
+# nit_all_data_fall20 <- ggplot(data = N_cycling, mapping = aes(x = Invasion, y = Net_Nitrification)) + 
+#    geom_boxplot(data=subset(N_cycling, Season=="Fall20")) + 
+#    ggtitle("Fall 2020") + 
+#    theme(plot.title = element_text(hjust = 0.5)) + 
+#    ylab("Net Nitrification (ug/g/day)") + 
+#    scale_y_continuous(limits = c(-0.5, 1))
+
+#p1 <- ggplotly(p1) %>% 
+   #layout(boxmode = "group")
+#p2 <- ggplotly(p2) %>% 
+   #layout(boxmode = "group")
+#p3 <- ggplotly(p3) %>% 
+   #layout(boxmode = "group")
+#p4 <- ggplotly(p4) %>% 
+   #layout(boxmode = "group")
+#p5 <- ggplotly(p5) %>% 
+   #layout(boxmode = "group")
+#p6 <- ggplotly(p6) %>% 
+   #layout(boxmode = "group")
+#p7 <- ggplotly(p7) %>% 
+   #layout(boxmode = "group")
+#p7
+#p8 <- ggplotly(p8) %>% 
+   #layout(boxmode = "group")
+#p9 <- ggplotly(p9) %>% 
+   #layout(boxmode = "group")
+#p10 <- ggplotly(p10) %>% 
+   #layout(boxmode = "group")
+#p11 <- ggplotly(p11) %>% 
+   #layout(boxmode = "group")
+#p12 <- ggplotly(p12) %>% 
+   #layout(boxmode = "group")
+
+```
+
+## *Mineralization Plots*
+
+```{r, echo = FALSE,   fig.width=12, fig.height=5, warning = FALSE}
+grid.arrange(min_site_all_data, min_all_data, nrow = 1)
+```
+
+```{r, echo = FALSE,   fig.width=12, fig.height=8, warning = FALSE}
+grid.arrange(min_site_spring20, min_site_summ20, min_all_data_spring20, min_all_data_summ20, nrow = 2)
+```
+
+## *Nitrification Plots*
+
+```{r, echo = FALSE,   fig.width=12, fig.height=5, warning = FALSE}
+grid.arrange(nit_site_all_data, nit_all_data, nrow = 1)
+```
+
+```{r, echo = FALSE,   fig.width=12, fig.height=8, warning = FALSE}
+grid.arrange(nit_site_spring20, nit_site_summ20, nit_all_data_spring20, nit_all_data_summ20, nrow = 2)
+```
+
+# Nitrogen cycling statistics 
+If p-value < 0.05 then there is no signficant difference
+```{r testing for normality and making graph of output, echo=FALSE, warning=FALSE}
+# All net mineralization data
+net_min_dist <- shapiro.test(N_cycling$Net_Mineralization) # not normal
+
+# All net nitrification data
+net_nit_dist <- shapiro.test(N_cycling$Net_Nitrification) # not normal
+
+#subset data to just Spring20
+spring_20 <- subset(N_cycling, Season=="Spring20")
+
+#subset data to just Summer20
+summer_20 <-subset(N_cycling, Season=="Summer20")
+
+#subset data to just Fall20
+#fall_20 <-subset(N_cycling, Season=="Fall20")
+
+#Spring2020 Net Mineralization distribution
+spring_20_min_dist <- shapiro.test(spring_20$Net_Mineralization) #not normal 
+
+#Summer 2020 Net mineralization distribution
+summer_20_min_dist <- shapiro.test(summer_20$Net_Mineralization) # not normal
+
+# Fall 2020  Net Mineralization distribution 
+# fall_20_min_dist <- shapiro.test(fall_20$Net_Mineralization) #normal
+# Fall19_NetMin_Var_Site <- bartlett.test(Fall19$Net_Mineralization~Fall19$Site) # equal variance between sites
+# Fall19_NetMin_Var_Invasion <- bartlett.test(Fall19$Net_Mineralization~Fall19$Site) #equal variance between invasion
+
+# Spring 2020 Net Nitrification
+spring_20_nit_dist <- shapiro.test(spring_20$Net_Nitrification) #not normal
+
+# Summer 2020 Net Nitrification
+summer_20_nit_dist <- shapiro.test(summer_20$Net_Nitrification) #not normal
+
+#Fall 2020 Net Nitrification
+#fall_20_nit_dist <- shapiro.test(fall_20$Net_Nitrification) #not normal
+
+#Making vectors for output graph
+Data <- c('net_nit_dist', 'net_nit_dist', 'spring_20_min_dist', 'summer_20_min_dist', 'spring_20_nit_dist', 'summer_20_nit_dist')
+p_value_normal_distribution <- c(net_min_dist$p.value, net_nit_dist$p.value, spring_20_min_dist$p.value, summer_20_min_dist$p.value, spring_20_nit_dist$p.value, summer_20_nit_dist$p.value)
+
+#Is there a way to add a third column "Normal distribution?" that says YES if p-value > 0.05 and NO if p-value < 0.05?
+
+NormalDist <- data.frame(Data,p_value_normal_distribution)
+NormalDist
+
+
+```
+
+
+```{r, Net Min and Net Nit significance between sites and invasion, echo=TRUE, warning=FALSE}
+
+# All data Net Min versus Invasion significance 
+wilcox.test(Net_Mineralization ~ Invasion, data = N_cycling) # no significant difference
+kruskal.test(Net_Mineralization ~ Site, data = N_cycling) # no significant difference
+
+# All data Net Nit versus Invasion significance
+wilcox.test(Net_Nitrification ~ Invasion, data = N_cycling) # no significant difference
+kruskal.test(Net_Nitrification ~ Site, data = N_cycling) # no significant difference
+
+#Spring20 Net Min versus Invasion
+wilcox.test(Net_Mineralization ~ Invasion, data = spring_20) # no significant difference
+kruskal.test(Net_Mineralization ~ Site, data = spring_20) # no significant difference
+
+#Summer20 Net Min versus Invasion
+wilcox.test(Net_Mineralization ~ Invasion, data = summer_20) # no significant difference
+kruskal.test(Net_Mineralization ~ Site, data = summer_20) # no significant difference
+
+# #Fall20 NetMin versus Invasion per site 
+# anova.Fall19.NetMin<- aov(Net_Mineralization ~ Invasion * Site, data = Fall19)
+# summary(anova.Fall19.NetMin)
+
+#Spring20 Net Nit versus invasion
+wilcox.test(Net_Nitrification ~ Invasion, data = spring_20) # no significant difference
+kruskal.test(Net_Nitrification ~ Site, data = spring_20) # no significant difference
+
+#Summer20 Net Nit versus invasion
+wilcox.test(Net_Nitrification ~ Invasion, data = summer_20) # very close, p-value = 0.06253
+kruskal.test(Net_Nitrification ~ Site, data = summer_20) # no significant difference
+
+# #Fall20 Net Nit versus invasion
+# wilcox.test(Net_Nitrification ~ Invasion, data = Fall19) # no significant difference
+# kruskal.test(Net_Nitrification ~ Site, data = Fall19) # no significant difference
+
+
+```
+
+```{r C:N versus N cycling statistics, warning=FALSE}
+#Add in separate regression lines for invaded and uninvaded 
+lm_C_N_min <- lm(Soil_CN ~ Net_Mineralization, data = N_cycling)
+summary(lm_C_N_min)
+
+lm_C_N_min_spring_20 <- lm(Soil_CN ~ Net_Mineralization, data = spring_20)
+summary(lm_C_N_min_spring_20)
+
+lm_C_N_min_summer_20 <- lm(Soil_CN ~ Net_Mineralization, data = summer_20)
+summary(lm_C_N_min_summer_20)
+
+#Fall20lmC.NNetMin <- lm(Soil_CN ~ Net_Mineralization, data = fall_20)
+#summary(Fall19lmC.NNetMin)
+
+lm_C_N_nit <- lm(Soil_CN ~ Net_Nitrification, data = N_cycling)
+summary(lm_C_N_nit)
+
+lm_C_N_nit_spring_20 <- lm(Soil_CN ~ Net_Nitrification, data = spring_20)
+summary(lm_C_N_nit_spring_20)
+
+lm_C_N_nit_summer_20 <- lm(Soil_CN ~ Net_Mineralization, data = summer_20)
+summary(lm_C_N_nit_summer_20)
+
+# Fall19lmC.NNetNit <- lm(Soil_CN ~ Net_Nitrification, data = Fall19)
+# summary(Fall19lmC.NNetNit)
+```
+
+# C:N versus nitrogen cycling figures
+```{r, echo=FALSE, warning=FALSE}
+#C:N versus net min all data
+C_N_net_min_all_data <- ggplot(N_cycling, aes(x=Net_Mineralization, y=Soil_CN, color=Invasion, shape=Invasion, label=Field_ID)) + geom_point() + ggtitle("All Data") + theme(plot.title = element_text(hjust = 0.5)) + geom_abline(slope = lm_C_N_min$coefficients[2], intercept = lm_C_N_min$coefficients[1]) + geom_smooth(method = "lm")
+
+#C:N versus net nitrification all data
+C_N_net_nit_all_data <- ggplot(N_cycling, aes(x=Net_Nitrification, y=Soil_CN, color=Invasion, shape=Invasion, label=Field_ID)) + geom_point() + ggtitle("All Data") + theme(plot.title = element_text(hjust = 0.5)) + geom_abline(slope = lm_C_N_nit$coefficients[2], intercept = lm_C_N_nit$coefficients[1]) + geom_smooth(method = "lm")
+
+C_N_net_min_spring_20 <- ggplot(spring_20, aes(Net_Mineralization, y=Soil_CN, color=Invasion, shape=Invasion, label = Field_ID)) + geom_point()+ ggtitle("Spring 2020") + theme(plot.title = element_text(hjust = 0.5)) + geom_abline(slope = lm_C_N_min_spring_20$coefficients[2], intercept = lm_C_N_min_spring_20$coefficients[1]) + geom_smooth(method = "lm")
+
+C_N_net_min_summer_20 <- ggplot(summer_20, aes(Net_Mineralization, y=Soil_CN, color=Invasion, shape=Invasion, label = Field_ID)) + geom_point()+ ggtitle("Summer 2020") + theme(plot.title = element_text(hjust = 0.5)) + geom_abline(slope = lm_C_N_min_spring_20$coefficients[2], intercept = lm_C_N_min_spring_20$coefficients[1]) + geom_smooth(method = "lm")
+
+# p11 <- ggplot(Fall19, aes(x=Net_Mineralization, y=Soil_CN, color=Invasion, shape=Invasion, label = Field_ID)) + geom_point()+ ggtitle("Fall 2019") + theme(plot.title = element_text(hjust = 0.5)) + geom_abline(slope = Fall19lmC.NNetMin$coefficients[2], intercept = Fall19lmC.NNetMin$coefficients[1]) + geom_smooth(method = "lm")
+
+C_N_net_nit_spring_20 <- ggplot(spring_20, aes(x=Net_Nitrification, y=Soil_CN, color=Invasion, shape=Invasion, label = Field_ID)) + geom_point() + ggtitle("Spring 2020") + theme(plot.title = element_text(hjust = 0.5)) + geom_abline(slope = lm_C_N_nit_spring_20$coefficients[2], intercept = lm_C_N_nit_spring_20$coefficients[1]) + geom_smooth(method = "lm")
+
+C_N_net_nit_summer_20 <- ggplot(summer_20, aes(Net_Nitrification, y=Soil_CN, color=Invasion, shape=Invasion, label = Field_ID)) + geom_point()+ ggtitle("Summer 2020") + theme(plot.title = element_text(hjust = 0.5)) + geom_abline(slope = lm_C_N_nit_summer_20$coefficients[2], intercept = lm_C_N_nit_summer_20$coefficients[1]) + geom_smooth(method = "lm")
+
+# p13 <- ggplot(Fall19, aes(x=Net_Nitrification, y=Soil_CN, color=Invasion, shape=Invasion, label = Field_ID)) + geom_point() + ggtitle("Fall 2019") + theme(plot.title = element_text(hjust = 0.5))  + geom_abline(slope = Fall19lmC.NNetNit$coefficients[2], intercept = Fall19lmC.NNetNit$coefficients[1]) + geom_smooth(method = "lm")
+
+ggplotly(C_N_net_min_all_data)
+ggplotly(C_N_net_nit_all_data)
+ggplotly(C_N_net_min_spring_20)
+ggplotly(C_N_net_min_summer_20)
+ggplotly(C_N_net_nit_spring_20)
+ggplotly(C_N_net_nit_summer_20)
+```
+
+
+```{r vegetation stats, Warning=FALSE}
+#Test normality for 
+veg_C_N_dist <- shapiro.test(spring_20$Veg_CN) #normal distribution
+veg_biomass_dist <- shapiro.test(spring_20$Biomass_.g._per_m.2) #normal distribution
+
+#test for equal variance
+veg_C_N_var <- bartlett.test(Veg_CN~Site, data = spring_20) #not equal variance 
+veg_biomass_var <- bartlett.test(spring_20$Biomass_.g._per_m.2~spring_20$Site) #not equal variance
+
+#Significance for Veg C&N
+wilcox.test(Veg_CN~Invasion, data = spring_20) # no significant difference between invasion
+kruskal.test(Veg_CN ~ Site, data = spring_20) # significant difference between sites
+dunnTest(Veg_CN~Site, data = spring_20, method="bh") #Shanahan significantly different from Coyote and NCAR
+
+#Significance for Veg biomass
+wilcox.test(spring_20$Biomass_.g._per_m.2~spring_20$Invasion) # significant difference between invasion
+kruskal.test(spring_20$Biomass_.g._per_m.2 ~ spring_20$Site) #no significant difference between sites
+
+```
+
+```{r vegetation, echo=FALSE, warning=FALSE}
+#Veg C:N per site and invasion
+veg_C_N_site <- ggplot(data = N_cycling, mapping = aes(x = Site, y = Veg_CN, fill = Invasion, label=Field_ID)) + geom_boxplot() + ggtitle("Vegetation C:N") + theme(plot.title = element_text(hjust = 0.5)) + ylab("C:N")
+
+#Veg biomass per site and invasion
+veg_biomass_site <- ggplot(data = N_cycling, mapping = aes(x = Site, y = N_cycling$Biomass_.g._per_m.2, fill = Invasion, label=Field_ID)) + geom_boxplot() + ggtitle("Vegetation Biomass") + theme(plot.title = element_text(hjust = 0.5)) + ylab("Biomass (g/m^2)")
+
+#All Veg C:N
+veg_C_N_all_data <- ggplot(data = N_cycling, mapping = aes(x = Invasion, y = Veg_CN, label=Field_ID)) + geom_boxplot() + ggtitle("Vegetation C:N") + theme(plot.title = element_text(hjust = 0.5)) + ylab("C:N")
+
+#all veg biomass
+veg_biomass_all_data <- ggplot(data = N_cycling, mapping = aes(x = Invasion, y = N_cycling$Biomass_.g._per_m.2, label=Field_ID)) + geom_boxplot() + ggtitle("Vegetation Biomass") + theme(plot.title = element_text(hjust = 0.5)) + ylab("Biomass (g/m^2)")
+
+
+ggplotly(veg_C_N_site)%>% 
+   layout(boxmode = "group")
+ggplotly(veg_biomass_site)%>% 
+   layout(boxmode = "group")
+ggplotly(veg_C_N_all_data)%>% 
+   layout(boxmode = "group")
+ggplotly(veg_biomass_all_data)%>% 
+   layout(boxmode = "group")
+```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```

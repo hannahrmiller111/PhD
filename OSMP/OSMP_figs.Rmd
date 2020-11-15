@@ -1,0 +1,311 @@
+---
+title: "Boulder Open Space and Mountain Parks"
+author: "Eve-Lyn Hinckley and Hannah Miller"
+output:
+  html_document:
+    code_folding: show
+    df_print: paged
+    toc: yes
+    toc_depth: 2
+    toc_float: yes
+source: source.dropbox(https://www.dropbox.com/s/1e5t6l7xt4emgwp/N_cycling.csv?dl=0))
+subtitle: Figures and statistics
+editor_options:
+  chunk_output_type: console
+---
+```{r}
+#load necessary packages
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(lme4)
+library(LMERConvenienceFunctions)
+```
+
+```{r, include = FALSE}
+#Load N_cycling excel file
+N_cycling <- read.csv("~/Dropbox/Boulder_OSMP_TOG/Data/N_cycling.csv")
+d <- N_cycling
+```
+
+
+# Visualizations
+
+```{r, echo = FALSE, warning = FALSE}
+#Net Mineralization combining all seasons
+d %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Net_Mineralization), 
+            sd = sd(Net_Mineralization), 
+            n = length(Net_Mineralization), 
+            se = sd / sqrt(n)) %>% 
+    ggplot(aes(x = Invasion, y = mn)) + labs(title = "All Seasons", y = "Net Mineralization (ug/g/day)", x = "") +
+      geom_point() +
+      geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1) +
+      facet_grid(~ Site) +
+      geom_jitter(data = d, aes(x = Invasion, y = Net_Mineralization), col = 2, width = .1) +
+  theme_bw()
+
+#bar graph 
+d %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Net_Mineralization), 
+            sd = sd(Net_Mineralization), 
+            n = length(Net_Mineralization), 
+            se = sd / sqrt(n)) %>% 
+  ggplot(d, mapping = aes(x=Site, y = mn, fill = Invasion)) +
+  geom_col(position = "dodge") +
+  geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1, position = position_dodge(0.9)) +
+  theme_classic() +
+  labs(title = "All Seasons", y = "Net Mineralization (ug/g/day)", x = "")
+
+# Net mineralization Summer 2020
+Summer20 <- subset(d, Season == "Summer20" )
+Summer20 %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Net_Mineralization), 
+            sd = sd(Net_Mineralization), 
+            n = length(Net_Mineralization), 
+            se = sd / sqrt(n)) %>% 
+    ggplot(aes(x = Invasion, y = mn,)) + labs(title = "Summer 2020", y = "Net Mineralization (ug/g/day)", x = "") +
+      geom_point() +
+      geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1) +
+      facet_grid(~Site) +
+      geom_jitter(data = Summer20, aes(x = Invasion, y = Net_Mineralization), col = 2, width = .1) +
+  theme_bw()
+
+#bar graph 
+Summer20 %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Net_Mineralization), 
+            sd = sd(Net_Mineralization), 
+            n = length(Net_Mineralization), 
+            se = sd / sqrt(n)) %>% 
+  ggplot(Summer20, mapping = aes(x=Site, y = mn, fill = Invasion)) +
+  geom_col(position = "dodge") +
+  geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1, position = position_dodge(0.9)) +
+  theme_classic() +
+  labs(title = "Summer 2020", y = "Net Mineralization (ug/g/day)", x = "")
+
+# Net mineralization Fall 2020
+# Fall20 <- subset(d, Season == "Fall20")
+# Fall20 %>% 
+#   group_by(Invasion, Site) %>% 
+#   summarise(mn = mean(Net_Mineralization), 
+#             sd = sd(Net_Mineralization), 
+#             n = length(Net_Mineralization), 
+#             se = sd / sqrt(n)) %>% 
+#     ggplot(aes(x = Invasion, y = mn,)) + labs(title = "Summer 2020", y = "Net Mineralization (ug/g/day)", x = "") +
+#       geom_point() +
+#       geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1) +
+#       facet_grid(~Site) +
+#       geom_jitter(data = Fall20, aes(x = Invasion, y = Net_Mineralization), col = 2, width = .1) +
+#   theme_bw()
+
+# Net nitrification all seasons
+d %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Net_Nitrification), 
+            sd = sd(Net_Nitrification), 
+            n = length(Net_Nitrification), 
+            se = sd / sqrt(n)) %>% 
+    ggplot(aes(x = Invasion, y = mn)) + labs(title = "All Seasons", y = "Net Nitrification (ug/g/day)", x = "") +
+      geom_point(color = 'darkblue') +
+      geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1) +
+      facet_grid(~Site) +
+      geom_jitter(data = d, aes(x = Invasion, y = Net_Nitrification), col = 2, width = .1) +
+  theme_bw()
+
+#bar graph 
+d %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Net_Nitrification), 
+            sd = sd(Net_Nitrification), 
+            n = length(Net_Nitrification), 
+            se = sd / sqrt(n)) %>% 
+  ggplot(d, mapping = aes(x=Site, y = mn, fill = Invasion)) +
+  geom_col(position = "dodge") +
+  geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1, position = position_dodge(0.9)) +
+  theme_classic() +
+  labs(title = "All Seasons", y = "Net Mineralization (ug/g/day)", x = "")
+
+# Net Nitrification Summer 2020
+Summer20 %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Net_Nitrification), 
+            sd = sd(Net_Nitrification), 
+            n = length(Net_Nitrification), 
+            se = sd / sqrt(n)) %>% 
+    ggplot(aes(x = Invasion, y = mn,)) + labs(title = "Summer 2020", y = "Net Nitrification (ug/g/day)", x = "") +
+      geom_point() +
+      geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1) +
+      facet_grid(~Site) +
+      geom_jitter(data = Summer20, aes(x = Invasion, y = Net_Nitrification), col = 2, width = .1) +
+  theme_bw()
+
+#bar graph 
+Summer20 %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Net_Nitrification), 
+            sd = sd(Net_Nitrification), 
+            n = length(Net_Nitrification), 
+            se = sd / sqrt(n)) %>% 
+  ggplot(Summer20, mapping = aes(x=Site, y = mn, fill = Invasion)) +
+  geom_col(position = "dodge") +
+  geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1, position = position_dodge(0.9)) +
+  theme_classic() +
+  labs(title = "Summer 2020", y = "Net Nitrication (ug/g/day)", x = "")
+
+# Net Nitrification Fall 2020
+# Fall20 %>% 
+#   group_by(Invasion, Site) %>% 
+#   summarise(mn = mean(Net_Nitrification), 
+#             sd = sd(Net_Nitrification), 
+#             n = length(Net_Nitrification), 
+#             se = sd / sqrt(n)) %>% 
+#     ggplot(aes(x = Invasion, y = mn,)) + labs(title = "Summer 2020", y = "Net Nitrification (ug/g/day)", x = "") +
+#       geom_point() +
+#       geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1) +
+#       facet_grid(~Site) +
+#       geom_jitter(data = Fall20, aes(x = Invasion, y = Net_Nitrification), col = 2, width = .1) +
+#   theme_bw()
+```
+
+# Vegetation Biomass 
+
+```{r, echo = FALSE, warning = FALSE}
+Summer20 %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Biomass_.g._per_m.2), 
+            sd = sd(Biomass_.g._per_m.2), 
+            n = length(Biomass_.g._per_m.2), 
+            se = sd / sqrt(n)) %>% 
+    ggplot(aes(x = Invasion, y = mn,)) + labs(y = "Biomass (g/m^2)", x = "") +
+      geom_point() +
+      geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1) +
+      facet_grid(~Site) +
+      geom_jitter(data = Summer20, aes(x = Invasion, y = Biomass_.g._per_m.2), col = 2, width = .1) +
+  theme_bw()
+
+#bar graph 
+Summer20 %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Biomass_.g._per_m.2), 
+            sd = sd(Biomass_.g._per_m.2), 
+            n = length(Biomass_.g._per_m.2), 
+            se = sd / sqrt(n)) %>% 
+  ggplot(Summer20, mapping = aes(x=Site, y = mn, fill = Invasion)) +
+  geom_col(position = "dodge") +
+  geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1, position = position_dodge(0.9)) +
+  theme_classic() +
+  labs(title = "Summer 2020", y = "Biomass (g/m^2", x = "") +
+  theme_classic()
+```
+
+# Soil and Vegetation C and N
+
+```{r, echo = FALSE, warning = FALSE}
+#Soil total N
+Summer20 %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Soil_N), 
+            sd = sd(Soil_N), 
+            n = length(Soil_N), 
+            se = sd / sqrt(n)) %>% 
+    ggplot(aes(x = Invasion, y = mn,)) + labs(y = "Soil Total N", x = "") +
+      geom_point() +
+      geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1) +
+      facet_grid(~Site) +
+      geom_jitter(data = Summer20, aes(x = Invasion, y = Soil_N), col = 2, width = .1) +
+  theme_bw()
+
+#Soil C:N
+Summer20 %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Soil_CN), 
+            sd = sd(Soil_CN), 
+            n = length(Soil_CN), 
+            se = sd / sqrt(n)) %>% 
+    ggplot(aes(x = Invasion, y = mn,)) + labs(y = "Soil C:N", x = "") +
+      geom_point() +
+      geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1) +
+      facet_grid(~Site) +
+      geom_jitter(data = Summer20, aes(x = Invasion, y = Soil_CN), col = 2, width = .1) +
+  theme_bw()
+
+# Veg total N
+Summer20 %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Veg_N), 
+            sd = sd(Veg_N), 
+            n = length(Veg_N), 
+            se = sd / sqrt(n)) %>% 
+    ggplot(aes(x = Invasion, y = mn,)) + labs(y = "Vegetation Total N", x = "") +
+      geom_point() +
+      geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1) +
+      facet_grid(~Site) +
+      geom_jitter(data = Summer20, aes(x = Invasion, y = Veg_N), col = 2, width = .1) +
+  theme_bw()
+
+# Veg C:N
+Summer20 %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(Veg_CN), 
+            sd = sd(Veg_CN), 
+            n = length(Veg_CN), 
+            se = sd / sqrt(n)) %>% 
+    ggplot(aes(x = Invasion, y = mn)) + labs(y = "Vegetation C:N", x = "") +
+      geom_point() +
+      geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1) +
+      facet_grid(~Site) +
+      geom_jitter(data = Summer20, aes(x = Invasion, y = Veg_CN), col = 2, width = .1) +
+  theme_bw()
+```
+
+# Soil moisture
+
+```{r, echo = FALSE, warning = FALSE}
+Summer20 %>% 
+  group_by(Invasion, Site) %>% 
+  summarise(mn = mean(percent_water), 
+            sd = sd(percent_water), 
+            n = length(percent_water), 
+            se = sd / sqrt(n)) %>% 
+    ggplot(aes(x = Invasion, y = mn)) + labs(y = "% Soil Water Content", x = "") +
+      geom_point() +
+      geom_errorbar(aes(ymax = mn + se, ymin = mn - se), width = 0.1) +
+      facet_grid(~Site) +
+      geom_jitter(data = Summer20, aes(x = Invasion, y = percent_water), col = 2, width = .1) +
+  theme_bw()
+```
+
+
+# Table of statistics
+
+```{r, echo = FALSE, warning = FALSE}
+stats <- tibble(
+  Site = c('Coyote', 'NCAR', 'Shanahan'),
+  'Net Mineralization diff btw invaded and uninvaded' = c('-0.55, p-value = 0.0824', '-0.28, p-value = 0.049 *', '0.25, p-value = 0.2082'),
+  'Net Nitrification diff btw invaded and uninvaded' = c('-0.49, p-value = 0.08554','-0.24, p-value = 0.0648','0.112, p-value = 0.4457')
+)
+stats
+
+plot_data <- tibble(
+  Site = c('Coyote Uninvaded', 'Coyote Invaded', 'NCAR Uninvaded', 'NCAR Invaded', 
+           'Shanahan Uninvaded','Shanahan Invaded'),
+  pH = c(6.25, 6.49, 6.69, 6.40, 6.17, 6.17),
+  '% Water Content' = c('12.21 ± 5.45', '16.34 ± 6.87', '20.08 ± 7.55', '20.74 ± 6.33', '20.62 ± 2.45', '18.61 ± 5.44'),
+  'Above Ground Biomass (g/m^2)' = c('575.75 ± 335.61', '1321.33 ± 390.68', '757.92 ± 542.88', '1116.12 ± 419.64', '1137.84 ± 530.16', '1358.17 ± 401.99'),
+  Hillslope = c('28%','28%','15%','15%','1%','1%'),
+  Soil_C_N = c('16.96 ± 1.62','16.40 ± 2.13','13.49 ± 1.28','13.5 ± 0.62','15.42 ± 2.81','15.58 ± 4.2'),
+  Veg_C_N = c('45.14 ± 3.86','47.05 ± 3.5','37.06 ± 4.74','51.15 ± 9.56','58.85 ± 9.88','48.97 ± 3.4')
+)
+plot_data
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+

@@ -1,0 +1,117 @@
+---
+title: "Boulder Open Space and Mountain Parks"
+author: "Eve-Lyn Hinckley and Hannah Miller"
+output:
+  html_document:
+    code_folding: show
+    df_print: paged
+    toc: yes
+    toc_depth: 2
+    toc_float: yes
+source: source.dropbox(https://www.dropbox.com/s/1e5t6l7xt4emgwp/N_cycling.csv?dl=0))
+subtitle: Figures and statistics
+editor_options:
+  chunk_output_type: console
+---
+```{r}
+#load necessary packages
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(lme4)
+library(LMERConvenienceFunctions)
+```
+
+# Net Mineralization
+
+```{r}
+# Summer 2020
+lapply(split(d, d$Site), function(x){ 
+  m <- lm(Net_Mineralization ~ Invasion, data = subset(x, Season == 'Summer20'))
+  summary(m)
+})
+## Coyote trending (b = -0.55 diff, p-value = 0.0824), 
+#NCAR significant (b = -0.28, p-value = 0.049), 
+#Shan not significant (b = 0.25, p-value = 0.2082, wrong direction)
+
+# Fall 2020
+# lapply(split(d, d$Site), function(x){ 
+#   m <- lm(Net_Mineralization ~ Invasion, data = subset(x, Season == 'Fall20'))
+#   summary(m)
+# })
+# ## Coyote
+#NCAR  
+#Shan 
+
+#Summer and Fall combined
+## testing among plot variability
+# m1 <- aov(Net_Mineralization ~ Invasion * Site + Season + Error(plot/Season), data = d)
+# summary(m)
+
+## testing within plot variability
+#m2 <- aov(Net_Mineralization ~ Invasion * Site + Season, data = d)
+#summary(m2)
+```
+
+# Net Nitrification
+
+```{r}
+# Summer 2020
+lapply(split(d, d$Site), function(x){ 
+  m <- lm(Net_Nitrification ~ Invasion, data = subset(x, Season == 'Summer20'))
+  summary(m)
+})
+
+# Coyote trending (b = -0.49, p-value = 0.08554)
+# NCAR trending (b = -0.24, p-value = 0.0648)
+# Shanahan not significant (b = 0.112, p-value = 0.4457)
+
+# Fall 2020
+lapply(split(d, d$Site), function(x){ 
+  m <- lm(Net_Nitrification ~ Invasion, data = subset(x, Season == 'Fall20'))
+  summary(m)
+})
+
+#Summer and Fall combined
+## testing among plot variability
+# m3 <- aov(Net_Nitrification ~ Invasion * Site + Season + Error(plot/Season), data = d)
+# summary(m)
+
+## testing within plot variability
+#m4 <- aov(Net_Nitrification ~ Invasion * Site + Season, data = d)
+#summary(m2)
+```
+
+# Biomass versus N rats
+
+```{r}
+lapply(split(d, d$Site), function(x){ 
+  m <- lm(Net_Nitrification ~ Biomass_.g._per_m.2, data = subset(x, Season == 'Summer20'))
+  summary(m)
+})
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
